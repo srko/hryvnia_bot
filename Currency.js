@@ -46,4 +46,11 @@ function updateGlobalCurrencyList(aMessageChatId) {
     }).then(function (data) {
         sendMessageByBot(aMessageChatId, data);
     });
+    
+    // using the method from the HTML5 Rocks article:
+    // function testAjax() {
+    //     return Promise.resolve($.ajax({
+    //         url: "getvalue.php"
+    //         }));
+    // }
 }

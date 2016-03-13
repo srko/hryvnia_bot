@@ -29,6 +29,8 @@ bot.on('text', function(msg) {
 
   if (messageText.indexOf('/currency') === 0) {
     updateGlobalCurrencyList(messageChatId);
+  } else if (+messageText) {
+    numberToCurrency(messageChatId, messageText);
   }
 })
 
@@ -42,15 +44,31 @@ function updateGlobalCurrencyList(aMessageChatId) {
       return res.json();
     }).then(function(json) {
       console.log(json);
-      return 'Еврики' + '(' + json[0].ccy + ') по ' + json[0].buy + ', братишка';
+      var buy = parseFloat(Math.round(json[2].buy * 100) / 100).toFixed(2);
+      var sale = parseFloat(Math.round(json[2].sale * 100) / 100).toFixed(2);
+      
+      return `💲 покупают по ${buy}, а продают по ${sale}`;
+      
     }).then(function(data) {
       sendMessageByBot(aMessageChatId, data);
     });
+}
 
-  // using the method from the HTML5 Rocks article:
-  // function testAjax() {
-  //     return Promise.resolve($.ajax({
-  //         url: "getvalue.php"
-  //         }));
-  // }
+function numberToCurrency(aMessageChatId, aMessageText) {
+  fetch(options.host)
+  .then(function(res) {
+    return res.json();
+  }).then(function(json) {
+    console.log(json);
+    var buy = parseFloat(Math.round(json[2].buy * 100) / 100).toFixed(2);
+    var sale = parseFloat(Math.round(json[2].sale * 100) / 100).toFixed(2);
+    
+    buy = buy * +aMessageText;
+    sale = sale * +aMessageText;
+    
+    return buy + ' ' + sale;
+  }).then(function(data) {
+    sendMessageByBot(aMessageChatId, data);
+  })
+  
 }

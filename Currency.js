@@ -26,8 +26,18 @@ bot.on('text', function(msg) {
   var messageText = msg.text;
   var messageDate = msg.date;
   var messageUser = msg.from.username;
+  
+  if (messageText.indexOf('/every') === 0) {
+    var time = new Date();
+    console.log(time.getMinutes() % 2);
+    if (time.getMinutes() % 2 > 0) {
+      setInterval(function() {
+        updateGlobalCurrencyList(messageChatId);
+      }, 5000);
+    }
+  }
 
-  if (messageText.indexOf('/currency') === 0) {
+  if (messageText.indexOf('/rates') === 0) {
     updateGlobalCurrencyList(messageChatId);
   } else if (+messageText) {
     numberToCurrency(messageChatId, messageText);
@@ -43,11 +53,19 @@ function updateGlobalCurrencyList(aMessageChatId) {
     .then(function(res) {
       return res.json();
     }).then(function(json) {
-      console.log(json);
-      var buy = parseFloat(Math.round(json[2].buy * 100) / 100).toFixed(2);
-      var sale = parseFloat(Math.round(json[2].sale * 100) / 100).toFixed(2);
+      var dBuy = parseFloat(Math.round(json[2].buy * 100) / 100).toFixed(2);
+      var dSale = parseFloat(Math.round(json[2].sale * 100) / 100).toFixed(2);
+      var eBuy = parseFloat(Math.round(json[0].buy * 100) / 100).toFixed(2);
+      var eSale = parseFloat(Math.round(json[0].sale * 100) / 100).toFixed(2);
+      var rBuy = parseFloat(Math.round(json[1].buy * 100) / 100).toFixed(2);
+      var rSale = parseFloat(Math.round(json[1].sale * 100) / 100).toFixed(2);
+
+      var em = String.fromCodePoint(0x1F910);
       
-      return `💲 покупают по ${buy}, а продают по ${sale}`;
+      return `${em}
+Долар: ${dBuy} / ${dSale}
+Євро: ${eBuy} / ${eSale}
+Рубль: ${rBuy} / ${rSale}`;
       
     }).then(function(data) {
       sendMessageByBot(aMessageChatId, data);
@@ -59,14 +77,24 @@ function numberToCurrency(aMessageChatId, aMessageText) {
   .then(function(res) {
     return res.json();
   }).then(function(json) {
-    console.log(json);
-    var buy = parseFloat(Math.round(json[2].buy * 100) / 100).toFixed(2);
-    var sale = parseFloat(Math.round(json[2].sale * 100) / 100).toFixed(2);
+    var d = parseFloat( +aMessageText / (Math.round( (json[2].sale) * 100 ) / 100) ).toFixed(2);
+    var e = parseFloat( +aMessageText / (Math.round( (json[0].sale) * 100 ) / 100) ).toFixed(2);
+    var r = parseFloat( +aMessageText / (Math.round( (json[1].sale) * 100 ) / 100) ).toFixed(2);
     
-    buy = buy * +aMessageText;
-    sale = sale * +aMessageText;
+    switch (+d) {
+        case 1:
+            console.log( d + ' долар');
+            break;
     
-    return buy + ' ' + sale;
+        default:
+        console.log('доларів');
+            break;
+    }
+
+    return `
+${d} долара
+${e} євро
+${r} рубля`;
   }).then(function(data) {
     sendMessageByBot(aMessageChatId, data);
   })

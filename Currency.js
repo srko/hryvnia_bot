@@ -80,21 +80,11 @@ function numberToCurrency(aMessageChatId, aMessageText) {
     var d = parseFloat( +aMessageText / (Math.round( (json[2].sale) * 100 ) / 100) ).toFixed(2);
     var e = parseFloat( +aMessageText / (Math.round( (json[0].sale) * 100 ) / 100) ).toFixed(2);
     var r = parseFloat( +aMessageText / (Math.round( (json[1].sale) * 100 ) / 100) ).toFixed(2);
-    
-    switch (+d) {
-        case 1:
-            console.log( d + ' долар');
-            break;
-    
-        default:
-        console.log('доларів');
-            break;
-    }
 
     return `
-${d} долара
-${e} євро
-${r} рубля`;
+${d} $
+${e} €
+${r} ₽`;
   }).then(function(data) {
     sendMessageByBot(aMessageChatId, data);
   })

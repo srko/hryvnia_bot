@@ -39,7 +39,7 @@ bot.on('text', function(msg) {
 
   if (messageText.indexOf('/rates') === 0) {
     updateGlobalCurrencyList(messageChatId);
-  } else if (+messageText) {
+  } else if (messageText) {
     numberToCurrency(messageChatId, messageText);
   }
 })
@@ -80,6 +80,8 @@ function numberToCurrency(aMessageChatId, aMessageText) {
     var d = parseFloat( +aMessageText / (Math.round( (json[2].sale) * 100 ) / 100) ).toFixed(2);
     var e = parseFloat( +aMessageText / (Math.round( (json[0].sale) * 100 ) / 100) ).toFixed(2);
     var r = parseFloat( +aMessageText / (Math.round( (json[1].sale) * 100 ) / 100) ).toFixed(2);
+    
+    console.log(parseMessage(aMessageText));
 
     return `
 ${d} $
@@ -89,4 +91,17 @@ ${r} ₽`;
     sendMessageByBot(aMessageChatId, data);
   })
   
+}
+
+function parseMessage(aMessageText) {
+    var result = [];
+    var line = aMessageText;
+    
+    line = line.replace(/^\d+/gm, "$& ");
+    
+    result = line.split(/\s+/g);
+    
+    result[0] = +result[0];
+    
+    return result;
 }

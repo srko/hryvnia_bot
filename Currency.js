@@ -1,6 +1,6 @@
 var TelegramBot = require('node-telegram-bot-api');
 var fetch = require('node-fetch');
-var http = require('http');
+// var http = require('http');
 
 var token = '197462224:AAEDcz9mG3CM1M_dAK_XPF_Qp9wGGG7X-NA';
 var botOptions = {

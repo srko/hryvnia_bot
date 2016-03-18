@@ -103,5 +103,51 @@ function parseMessage(aMessageText) {
     
     result[0] = +result[0];
     
+    switch (result[1].toLowerCase()) {
+        case 'доллар':
+        case 'долар':
+        case 'дол':
+        case 'д':
+        case 'долларов':
+        case 'доларів':
+        case 'даллари':
+        case 'доллары':
+        case 'доллара':
+        case 'долара':
+            result[1] = 'USD';
+            break;
+        case 'евро':
+        case 'євро':
+        case 'евр':
+        case 'євр':
+        case 'єв':
+        case 'ев':
+        case 'е':
+        case 'є':
+        case 'евров':
+        case 'євров':
+        case 'евры':
+        case 'єври':
+        case 'еври':
+        case 'евра':
+        case 'євра':
+            result[1] = 'EUR';
+            break;
+        case 'рубль':
+        case 'рубл':
+        case 'руб':
+        case 'ру':
+        case 'р':
+        case 'рублей':
+        case 'рублів':
+        case 'рубли':
+        case 'рублі':
+        case 'рубля':
+            result[1] = 'RUB';
+            break;        
+        default:
+            result[1] = 'UAH';
+    }
+
     return result;
 }

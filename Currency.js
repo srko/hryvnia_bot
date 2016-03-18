@@ -62,10 +62,7 @@ function updateGlobalCurrencyList(aMessageChatId) {
 
       var em = String.fromCodePoint(0x1F910);
       
-      return `${em}
-Долар: ${dBuy} / ${dSale}
-Євро: ${eBuy} / ${eSale}
-Рубль: ${rBuy} / ${rSale}`;
+      return `${em} Долар: ${dBuy} / ${dSale}, Євро: ${eBuy} / ${eSale}, Рубль: ${rBuy} / ${rSale}`;
       
     }).then(function(data) {
       sendMessageByBot(aMessageChatId, data);
@@ -81,12 +78,9 @@ function numberToCurrency(aMessageChatId, aMessageText) {
     var e = parseFloat( +aMessageText / (Math.round( (json[0].sale) * 100 ) / 100) ).toFixed(2);
     var r = parseFloat( +aMessageText / (Math.round( (json[1].sale) * 100 ) / 100) ).toFixed(2);
     
-    console.log(parseMessage(aMessageText));
+    console.log(arrayToMoney( parseMessage(aMessageText), json ));
 
-    return `
-${d} $
-${e} €
-${r} ₽`;
+    return `${d} $, ${e} €, ${r} ₽`;
   }).then(function(data) {
     sendMessageByBot(aMessageChatId, data);
   })
@@ -148,6 +142,41 @@ function parseMessage(aMessageText) {
         default:
             result[1] = 'UAH';
     }
+    
+    return result;
+}
 
+function arrayToMoney(array, rates) {
+    var money = array[0];
+    var h;
+    var d;
+    var e;
+    var r;
+    var result = [];
+    
+    if (array[1] == 'USD') {
+        h = money * rates[2].sale;
+        d = array[0];
+        e = h / rates[0].sale;
+        r = h / rates[1].sale;
+    } else if (array[1] == 'EUR') {
+        h = money * rates[0].sale;
+        d = h / rates[2].sale;
+        e = array[0];
+        r = h / rates[1].sale;
+    } else if (array[1] == 'RUB') {
+        h = money * rates[1].sale;
+        d = h / rates[2].sale;
+        e = h / rates[0].sale;
+        r = array[0]; 
+    } else {
+        h = array[0];
+        d = money / rates[2].sale + ' $';
+        e = money / rates[0].sale + ' €';
+        r = money / rates[1].sale + ' ₽';       
+    }
+    
+    result.push(h, d, e, r);
+    
     return result;
 }

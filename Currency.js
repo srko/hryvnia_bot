@@ -60,10 +60,9 @@ function updateGlobalCurrencyList(aMessageChatId) {
       var rBuy = parseFloat(Math.round(json[1].buy * 100) / 100).toFixed(2);
       var rSale = parseFloat(Math.round(json[1].sale * 100) / 100).toFixed(2);
 
-      var em = String.fromCodePoint(0x1F910);
+      var em = String.fromCodePoint(0x1F911);
       
       return `${em} Долар: ${dBuy} / ${dSale}, Євро: ${eBuy} / ${eSale}, Рубль: ${rBuy} / ${rSale}`;
-      
     }).then(function(data) {
       sendMessageByBot(aMessageChatId, data);
     });
@@ -74,13 +73,15 @@ function numberToCurrency(aMessageChatId, aMessageText) {
   .then(function(res) {
     return res.json();
   }).then(function(json) {
-    var d = parseFloat( +aMessageText / (Math.round( (json[2].sale) * 100 ) / 100) ).toFixed(2);
-    var e = parseFloat( +aMessageText / (Math.round( (json[0].sale) * 100 ) / 100) ).toFixed(2);
-    var r = parseFloat( +aMessageText / (Math.round( (json[1].sale) * 100 ) / 100) ).toFixed(2);
-    
-    console.log(arrayToMoney( parseMessage(aMessageText), json ));
+      
+      var text = parseMessage(aMessageText);
+      var rates = arrayToMoney(text, json);
+      
+    // var d = parseFloat( +aMessageText / (Math.round( (json[2].sale) * 100 ) / 100) ).toFixed(2);
+    // var e = parseFloat( +aMessageText / (Math.round( (json[0].sale) * 100 ) / 100) ).toFixed(2);
+     var r = parseFloat( +aMessageText / (Math.round( (json[1].sale) * 100 ) / 100) ).toFixed(2);
 
-    return `${d} $, ${e} €, ${r} ₽`;
+    return rates;
   }).then(function(data) {
     sendMessageByBot(aMessageChatId, data);
   })
@@ -91,11 +92,11 @@ function parseMessage(aMessageText) {
     var result = [];
     var line = aMessageText;
     
-    line = line.replace(/^\d+/gm, "$& ");
+    line = line.replace(/^\d+[,.]*\d*/gm, "$& ");
+    line = line.replace(/,/g, ".");
     
     result = line.split(/\s+/g);
-    
-    result[0] = +result[0];
+    result[0] = parseFloat(result[0]);
     
     switch (result[1].toLowerCase()) {
         case 'доллар':
@@ -155,28 +156,30 @@ function arrayToMoney(array, rates) {
     var result = [];
     
     if (array[1] == 'USD') {
-        h = money * rates[2].sale;
+        h = parseFloat((Math.round(money * 100) / 100) * (Math.round(rates[2].sale * 100) / 100)).toFixed(2);
         d = array[0];
-        e = h / rates[0].sale;
-        r = h / rates[1].sale;
+        e = parseFloat(h / (Math.round(rates[0].sale * 100) / 100)).toFixed(2);
+        r = parseFloat(h / (Math.round(rates[1].sale * 100) / 100)).toFixed(2);
+        result.push(h + ' ₴', e + ' €', r + ' ₽');
     } else if (array[1] == 'EUR') {
-        h = money * rates[0].sale;
-        d = h / rates[2].sale;
+        h = parseFloat((Math.round(money * 100) / 100) * (Math.round(rates[0].sale * 100) / 100)).toFixed(2);
+        d = parseFloat(h / (Math.round(rates[2].sale * 100) / 100)).toFixed(2);
         e = array[0];
-        r = h / rates[1].sale;
+        r = parseFloat(h / (Math.round(rates[1].sale * 100) / 100)).toFixed(2);
+        result.push(h + ' ₴', d + ' $', r + ' ₽');
     } else if (array[1] == 'RUB') {
-        h = money * rates[1].sale;
-        d = h / rates[2].sale;
-        e = h / rates[0].sale;
-        r = array[0]; 
+        h = parseFloat((Math.round(money * 100) / 100) * (Math.round(rates[1].sale * 100) / 100)).toFixed(2);
+        d = parseFloat(h / (Math.round(rates[2].sale * 100) / 100)).toFixed(2);
+        e = parseFloat(h / (Math.round(rates[0].sale * 100) / 100)).toFixed(2);
+        r = array[0];
+        result.push(h + ' ₴', d + ' $', e + ' €');
     } else {
         h = array[0];
-        d = money / rates[2].sale + ' $';
-        e = money / rates[0].sale + ' €';
-        r = money / rates[1].sale + ' ₽';       
+        d = parseFloat(money / (Math.round(rates[2].sale * 100) / 100)).toFixed(2);
+        e = parseFloat(money / (Math.round(rates[0].sale * 100) / 100)).toFixed(2);
+        r = parseFloat(money / (Math.round(rates[1].sale * 100) / 100)).toFixed(2);
+        result.push(d + ' $', e + ' €', r + ' ₽');      
     }
     
-    result.push(h, d, e, r);
-    
-    return result;
+    return result.join(',\n');
 }

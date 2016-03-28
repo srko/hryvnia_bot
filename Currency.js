@@ -83,7 +83,7 @@ function numberToCurrency(aMessageChatId, aMessageText) {
 
 function parseMessage(aMessageText) {
   var result = [];
-  var line = aMessageText;
+  var line = aMessageText.replace(/ /g, '');
 
   line = line.replace(/^\d+[,.]*\d*/gm, '$& ');
   line = line.replace(/,/g, '.');

@@ -13,27 +13,23 @@ var options = {
   host: 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5',
 };
 
-var content = '';
-
-bot.getMe().then(function(me) {
+bot.getMe().then((me) => {
   console.log('Hello! My name is %s', me.first_name);
   console.log('My id is %s', me.id);
   console.log('And my username is %s', me.username);
 });
 
-bot.on('text', function(msg) {
+bot.on('text', (msg) => {
   var messageChatId = msg.chat.id;
   var messageText = msg.text;
-  var messageDate = msg.date;
-  var messageUser = msg.from.username;
-  
+  // var messageDate = msg.date;
+  // var messageUser = msg.from.username;
+  var time = new Date();
+
   if (messageText.indexOf('/every') === 0) {
-    var time = new Date();
     console.log(time.getMinutes() % 2);
     if (time.getMinutes() % 2 > 0) {
-      setInterval(function() {
-        updateGlobalCurrencyList(messageChatId);
-      }, 5000);
+      setInterval(updateGlobalCurrencyList(messageChatId), 5000);
     }
   }
 
@@ -42,17 +38,18 @@ bot.on('text', function(msg) {
   } else if (messageText) {
     numberToCurrency(messageChatId, messageText);
   }
-})
+});
 
 function sendMessageByBot(aChatId, aMessage) {
-  bot.sendMessage(aChatId, aMessage, { caption: 'I\'m a cute bot!' });
+  bot.sendMessage(aChatId, aMessage, {
+    caption: 'I\'m a cute bot!',
+  });
 }
 
 function updateGlobalCurrencyList(aMessageChatId) {
   fetch(options.host)
-    .then(function(res) {
-      return res.json();
-    }).then(function(json) {
+    .then((res) => res.json())
+    .then((json) => {
       var dBuy = parseFloat(Math.round(json[2].buy * 100) / 100).toFixed(2);
       var dSale = parseFloat(Math.round(json[2].sale * 100) / 100).toFixed(2);
       var eBuy = parseFloat(Math.round(json[0].buy * 100) / 100).toFixed(2);
@@ -61,125 +58,128 @@ function updateGlobalCurrencyList(aMessageChatId) {
       var rSale = parseFloat(Math.round(json[1].sale * 100) / 100).toFixed(2);
 
       var em = String.fromCodePoint(0x1F911);
-      
+
       return `${em} Долар: ${dBuy} / ${dSale}, Євро: ${eBuy} / ${eSale}, Рубль: ${rBuy} / ${rSale}`;
-    }).then(function(data) {
+    }).then((data) => {
       sendMessageByBot(aMessageChatId, data);
     });
 }
 
 function numberToCurrency(aMessageChatId, aMessageText) {
   fetch(options.host)
-  .then(function(res) {
-    return res.json();
-  }).then(function(json) {
-      
+    .then((res) => res.json())
+    .then((json) => {
       var text = parseMessage(aMessageText);
       var rates = arrayToMoney(text, json);
-      
-    // var d = parseFloat( +aMessageText / (Math.round( (json[2].sale) * 100 ) / 100) ).toFixed(2);
-    // var e = parseFloat( +aMessageText / (Math.round( (json[0].sale) * 100 ) / 100) ).toFixed(2);
-     var r = parseFloat( +aMessageText / (Math.round( (json[1].sale) * 100 ) / 100) ).toFixed(2);
+      // var d = parseFloat(+aMessageText / (Math.round((json[2].sale) * 100) / 100)).toFixed(2);
+      // var e = parseFloat(+aMessageText / (Math.round((json[0].sale) * 100) / 100)).toFixed(2);
+      // var r = parseFloat(+aMessageText / (Math.round((json[1].sale) * 100) / 100)).toFixed(2);
 
-    return rates;
-  }).then(function(data) {
-    sendMessageByBot(aMessageChatId, data);
-  })
-  
+      return rates;
+    }).then((data) => {
+      sendMessageByBot(aMessageChatId, data);
+    });
 }
 
 function parseMessage(aMessageText) {
-    var result = [];
-    var line = aMessageText;
-    
-    line = line.replace(/^\d+[,.]*\d*/gm, "$& ");
-    line = line.replace(/,/g, ".");
-    
-    result = line.split(/\s+/g);
-    result[0] = parseFloat(result[0]);
-    
-    switch (result[1].toLowerCase()) {
-        case 'доллар':
-        case 'долар':
-        case 'дол':
-        case 'д':
-        case 'долларов':
-        case 'доларів':
-        case 'даллари':
-        case 'доллары':
-        case 'доллара':
-        case 'долара':
-            result[1] = 'USD';
-            break;
-        case 'евро':
-        case 'євро':
-        case 'евр':
-        case 'євр':
-        case 'єв':
-        case 'ев':
-        case 'е':
-        case 'є':
-        case 'евров':
-        case 'євров':
-        case 'евры':
-        case 'єври':
-        case 'еври':
-        case 'евра':
-        case 'євра':
-            result[1] = 'EUR';
-            break;
-        case 'рубль':
-        case 'рубл':
-        case 'руб':
-        case 'ру':
-        case 'р':
-        case 'рублей':
-        case 'рублів':
-        case 'рубли':
-        case 'рублі':
-        case 'рубля':
-            result[1] = 'RUB';
-            break;        
-        default:
-            result[1] = 'UAH';
-    }
-    
-    return result;
+  var result = [];
+  var line = aMessageText;
+
+  line = line.replace(/^\d+[,.]*\d*/gm, '$& ');
+  line = line.replace(/,/g, '.');
+
+  result = line.split(/\s+/g);
+  result[0] = parseFloat(result[0]);
+
+  switch (result[1].toLowerCase()) {
+    case 'доллар':
+    case 'долар':
+    case 'дол':
+    case 'д':
+    case 'долларов':
+    case 'доларів':
+    case 'даллари':
+    case 'доллары':
+    case 'доллара':
+    case 'долара':
+      result[1] = 'USD';
+      break;
+    case 'евро':
+    case 'євро':
+    case 'евр':
+    case 'євр':
+    case 'єв':
+    case 'ев':
+    case 'е':
+    case 'є':
+    case 'евров':
+    case 'євров':
+    case 'евры':
+    case 'єври':
+    case 'еври':
+    case 'евра':
+    case 'євра':
+      result[1] = 'EUR';
+      break;
+    case 'рубль':
+    case 'рубл':
+    case 'руб':
+    case 'ру':
+    case 'р':
+    case 'рублей':
+    case 'рублів':
+    case 'рубли':
+    case 'рублі':
+    case 'рубля':
+      result[1] = 'RUB';
+      break;
+    default:
+      result[1] = 'UAH';
+  }
+
+
+  return result;
 }
 
 function arrayToMoney(array, rates) {
-    var money = array[0];
-    var h;
-    var d;
-    var e;
-    var r;
-    var result = [];
-    
-    if (array[1] == 'USD') {
-        h = parseFloat((Math.round(money * 100) / 100) * (Math.round(rates[2].sale * 100) / 100)).toFixed(2);
-        d = array[0];
-        e = parseFloat(h / (Math.round(rates[0].sale * 100) / 100)).toFixed(2);
-        r = parseFloat(h / (Math.round(rates[1].sale * 100) / 100)).toFixed(2);
-        result.push(h + ' ₴', e + ' €', r + ' ₽');
-    } else if (array[1] == 'EUR') {
-        h = parseFloat((Math.round(money * 100) / 100) * (Math.round(rates[0].sale * 100) / 100)).toFixed(2);
-        d = parseFloat(h / (Math.round(rates[2].sale * 100) / 100)).toFixed(2);
-        e = array[0];
-        r = parseFloat(h / (Math.round(rates[1].sale * 100) / 100)).toFixed(2);
-        result.push(h + ' ₴', d + ' $', r + ' ₽');
-    } else if (array[1] == 'RUB') {
-        h = parseFloat((Math.round(money * 100) / 100) * (Math.round(rates[1].sale * 100) / 100)).toFixed(2);
-        d = parseFloat(h / (Math.round(rates[2].sale * 100) / 100)).toFixed(2);
-        e = parseFloat(h / (Math.round(rates[0].sale * 100) / 100)).toFixed(2);
-        r = array[0];
-        result.push(h + ' ₴', d + ' $', e + ' €');
-    } else {
-        h = array[0];
-        d = parseFloat(money / (Math.round(rates[2].sale * 100) / 100)).toFixed(2);
-        e = parseFloat(money / (Math.round(rates[0].sale * 100) / 100)).toFixed(2);
-        r = parseFloat(money / (Math.round(rates[1].sale * 100) / 100)).toFixed(2);
-        result.push(d + ' $', e + ' €', r + ' ₽');      
-    }
-    
-    return result.join(',\n');
+  var money = array[0];
+  var h;
+  var d;
+  var e;
+  var r;
+  var result = [];
+
+  if (array[1] === 'USD') {
+    h = parseFloat(
+      (Math.round(money * 100) / 100) * (Math.round(rates[2].sale * 100) / 100)
+    ).toFixed(2);
+    d = array[0];
+    e = parseFloat(h / (Math.round(rates[0].sale * 100) / 100)).toFixed(2);
+    r = parseFloat(h / (Math.round(rates[1].sale * 100) / 100)).toFixed(2);
+    result.push(`${h} ₴`, `${e} €`, `${r} ₽`);
+  } else if (array[1] === 'EUR') {
+    h = parseFloat(
+      (Math.round(money * 100) / 100) * (Math.round(rates[0].sale * 100) / 100)
+    ).toFixed(2);
+    d = parseFloat(h / (Math.round(rates[2].sale * 100) / 100)).toFixed(2);
+    e = array[0];
+    r = parseFloat(h / (Math.round(rates[1].sale * 100) / 100)).toFixed(2);
+    result.push(`${h} ₴`, `${d} $`, `${r} ₽`);
+  } else if (array[1] === 'RUB') {
+    h = parseFloat(
+      (Math.round(money * 100) / 100) * (Math.round(rates[1].sale * 100) / 100)
+    ).toFixed(2);
+    d = parseFloat(h / (Math.round(rates[2].sale * 100) / 100)).toFixed(2);
+    e = parseFloat(h / (Math.round(rates[0].sale * 100) / 100)).toFixed(2);
+    r = array[0];
+    result.push(`${h} ₴`, `${d} $`, `${e} €`);
+  } else {
+    h = array[0];
+    d = parseFloat(money / (Math.round(rates[2].sale * 100) / 100)).toFixed(2);
+    e = parseFloat(money / (Math.round(rates[0].sale * 100) / 100)).toFixed(2);
+    r = parseFloat(money / (Math.round(rates[1].sale * 100) / 100)).toFixed(2);
+    result.push(`${d} $`, `${e} €`, `${r} ₽`);
+  }
+
+  return result.join(',\n');
 }

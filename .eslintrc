@@ -1,0 +1,11 @@
+{
+  "extends": "airbnb",
+  "env": {
+    "browser": true,
+    "jquery": true,
+    "node": true,
+  },
+  "rules": {
+    "no-var": 0,
+  }
+}

@@ -29,7 +29,7 @@ bot.on('text', (msg) => {
   if (messageText.indexOf('/every') === 0) {
     console.log(time.getMinutes() % 2);
     if (time.getMinutes() % 2 > 0) {
-      setInterval(updateGlobalCurrencyList(messageChatId), 5000);
+      setInterval(updateGlobalCurrencyList, 5000, messageChatId);
     }
   }
 

@@ -1,6 +1,7 @@
 var TelegramBot = require('node-telegram-bot-api');
 var fetch = require('node-fetch');
 // var http = require('http');
+var CronJob = require('cron').CronJob;
 
 var token = '197462224:AAEDcz9mG3CM1M_dAK_XPF_Qp9wGGG7X-NA';
 var botOptions = {
@@ -24,26 +25,52 @@ bot.on('text', (msg) => {
   var messageText = msg.text;
   // var messageDate = msg.date;
   // var messageUser = msg.from.username;
-  var time = new Date();
+  var opts = {
+    reply_to_message_id: msg.message_id, // it's should be msg.chat.id
+    reply_markup: JSON.stringify({
+      keyboard: [
+        ['one'],
+        ['two', 'three'],
+        ['four', 'five', 'six'],
+      ],
+    }),
+  };
+
+  var job = new CronJob({
+    cronTime: '*/5 * * * * 1-5',
+    onTick: function () {
+      console.log('work');
+      updateGlobalCurrencyList(messageChatId);
+    }, function () {
+      console.log('must STOP!!!!');
+    },
+    start: false,
+    timeZone: 'Europe/Kiev',
+  });
 
   if (messageText.indexOf('/every') === 0) {
-    console.log(time.getMinutes() % 2);
-    if (time.getMinutes() % 2 > 0) {
-      setInterval(updateGlobalCurrencyList, 5000, messageChatId);
-    }
+    job.start();
+
+    setTimeout(function () {
+      console.log('stopppppp');
+      job.stop();
+    }, 15000);
+  }
+
+  if (messageText.indexOf('/not') === 0) {
+    console.log('stopppppp');
+    job.stop();
   }
 
   if (messageText.indexOf('/rates') === 0) {
     updateGlobalCurrencyList(messageChatId);
   } else if (messageText) {
-    numberToCurrency(messageChatId, messageText);
+    numberToCurrency(messageChatId, messageText, opts);
   }
 });
 
-function sendMessageByBot(aChatId, aMessage) {
-  bot.sendMessage(aChatId, aMessage, {
-    caption: 'I\'m a cute bot!',
-  });
+function sendMessageByBot(aChatId, aMessage, sendingOpts) {
+  bot.sendMessage(aChatId, aMessage, sendingOpts);
 }
 
 function updateGlobalCurrencyList(aMessageChatId) {
@@ -65,7 +92,7 @@ function updateGlobalCurrencyList(aMessageChatId) {
     });
 }
 
-function numberToCurrency(aMessageChatId, aMessageText) {
+function numberToCurrency(aMessageChatId, aMessageText, op) {
   fetch(options.host)
     .then((res) => res.json())
     .then((json) => {
@@ -77,7 +104,7 @@ function numberToCurrency(aMessageChatId, aMessageText) {
 
       return rates;
     }).then((data) => {
-      sendMessageByBot(aMessageChatId, data);
+      sendMessageByBot(aMessageChatId, data, op);
     });
 }
 

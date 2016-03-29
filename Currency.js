@@ -38,10 +38,10 @@ bot.on('text', (msg) => {
 
   var job = new CronJob({
     cronTime: '*/5 * * * * 1-5',
-    onTick: function () {
+    onTick: function() {
       console.log('work');
       updateGlobalCurrencyList(messageChatId);
-    }, function () {
+    }, function() {
       console.log('must STOP!!!!');
     },
     start: false,

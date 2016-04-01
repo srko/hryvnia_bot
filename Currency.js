@@ -14,6 +14,20 @@ var options = {
   host: 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5',
 };
 
+var job = new CronJob({
+  cronTime: '*/3 * * * * 1-5',
+  onTick() {
+    console.log('working...');
+    console.log(bot.getUpdates());
+    // updateGlobalCurrencyList(messageChatId);
+  },
+  onComplete() {
+    console.log('_________and finished');
+  },
+  start: false,
+  timeZone: 'Europe/Kiev',
+});
+
 bot.getMe().then((me) => {
   console.log('Hello! My name is %s', me.first_name);
   console.log('My id is %s', me.id);
@@ -26,7 +40,7 @@ bot.on('text', (msg) => {
   // var messageDate = msg.date;
   // var messageUser = msg.from.username;
   var opts = {
-    reply_to_message_id: msg.message_id, // it's should be msg.chat.id
+    // reply_to_message_id: msg.message_id, // выбирает предыдущее сообщение
     reply_markup: JSON.stringify({
       keyboard: [
         ['one'],
@@ -36,29 +50,11 @@ bot.on('text', (msg) => {
     }),
   };
 
-  var job = new CronJob({
-    cronTime: '*/5 * * * * 1-5',
-    onTick: function() {
-      console.log('work');
-      updateGlobalCurrencyList(messageChatId);
-    }, function() {
-      console.log('must STOP!!!!');
-    },
-    start: false,
-    timeZone: 'Europe/Kiev',
-  });
-
   if (messageText.indexOf('/every') === 0) {
     job.start();
-
-    setTimeout(function () {
-      console.log('stopppppp');
-      job.stop();
-    }, 15000);
   }
-
-  if (messageText.indexOf('/not') === 0) {
-    console.log('stopppppp');
+  if (messageText.indexOf('/none') === 0) {
+    console.log('must stop');
     job.stop();
   }
 

@@ -14,15 +14,16 @@ var options = {
   host: 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5',
 };
 
+var messageChatId;
+
 var job = new CronJob({
-  cronTime: '*/3 * * * * 1-5',
+  cronTime: '00 15 */1 * * 1-5',
   onTick() {
-    console.log('working...');
-    console.log(bot.getUpdates());
-    // updateGlobalCurrencyList(messageChatId);
+    console.log('→ → → → → working');
+    updateGlobalCurrencyList(messageChatId);
   },
   onComplete() {
-    console.log('_________and finished');
+    console.log('→ → → → → FINISHED');
   },
   start: false,
   timeZone: 'Europe/Kiev',
@@ -34,8 +35,9 @@ bot.getMe().then((me) => {
   console.log('And my username is %s', me.username);
 });
 
+
 bot.on('text', (msg) => {
-  var messageChatId = msg.chat.id;
+  messageChatId = msg.chat.id;
   var messageText = msg.text;
   // var messageDate = msg.date;
   // var messageUser = msg.from.username;
@@ -43,10 +45,13 @@ bot.on('text', (msg) => {
     // reply_to_message_id: msg.message_id, // выбирает предыдущее сообщение
     reply_markup: JSON.stringify({
       keyboard: [
-        ['one'],
-        ['two', 'three'],
-        ['four', 'five', 'six'],
+        ['USD'],
+        ['EUR', 'RUB'],
+        // ['four', 'five', 'six'],
       ],
+      one_time_keyboard: false,
+      resize_keyboard: true,
+      force_reply: true,
     }),
   };
 
@@ -54,7 +59,7 @@ bot.on('text', (msg) => {
     job.start();
   }
   if (messageText.indexOf('/none') === 0) {
-    console.log('must stop');
+    console.log('→ → → → → stoping');
     job.stop();
   }
 

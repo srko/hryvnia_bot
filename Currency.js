@@ -5,6 +5,10 @@ var CronJob = require('cron').CronJob;
 
 var token = '197462224:AAEDcz9mG3CM1M_dAK_XPF_Qp9wGGG7X-NA';
 var botOptions = {
+  webHook: {
+    port: process.env.PORT || 443,
+    host: process.env.HOST,
+  },
   polling: true,
 };
 

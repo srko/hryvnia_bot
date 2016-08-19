@@ -2,6 +2,7 @@ var TelegramBot = require('node-telegram-bot-api');
 var fetch = require('node-fetch');
 // var http = require('http');
 var CronJob = require('cron').CronJob;
+var botan = require('botanio')('aY_53_cuEgg4Aaz3_4Ixhv3zwu9GmsuZ');
 
 var token = '197462224:AAEDcz9mG3CM1M_dAK_XPF_Qp9wGGG7X-NA';
 var botOptions = {
@@ -41,6 +42,7 @@ bot.getMe().then((me) => {
 
 
 bot.on('text', (msg) => {
+  botan.track(msg, 'Start');
   messageChatId = msg.chat.id;
   var messageText = msg.text;
   // var messageDate = msg.date;
@@ -92,7 +94,8 @@ function updateGlobalCurrencyList(aMessageChatId) {
       var em = String.fromCodePoint(0x1F911);
 
       return `${em} Долар: ${dBuy} / ${dSale}, Євро: ${eBuy} / ${eSale}, Рубль: ${rBuy} / ${rSale}`;
-    }).then((data) => {
+    })
+    .then((data) => {
       sendMessageByBot(aMessageChatId, data);
     });
 }
@@ -108,7 +111,8 @@ function numberToCurrency(aMessageChatId, aMessageText, op) {
       // var r = parseFloat(+aMessageText / (Math.round((json[1].sale) * 100) / 100)).toFixed(2);
 
       return rates;
-    }).then((data) => {
+    })
+    .then((data) => {
       sendMessageByBot(aMessageChatId, data, op);
     });
 }

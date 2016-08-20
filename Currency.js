@@ -118,6 +118,7 @@ function numberToCurrency(aMessageChatId, aMessageText, op) {
 }
 
 function parseMessage(aMessageText) {
+  // TODO rewrite this with String.prototype.startsWith()
   var result = [];
   var line = aMessageText.replace(/ /g, '');
 

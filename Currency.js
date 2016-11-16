@@ -27,9 +27,11 @@ var job = new CronJob({
     console.log('→ → → → → working');
     updateGlobalCurrencyList(messageChatId);
   },
+
   onComplete() {
     console.log('→ → → → → FINISHED');
   },
+
   start: false,
   timeZone: 'Europe/Kiev',
 });
@@ -39,7 +41,6 @@ bot.getMe().then((me) => {
   console.log('My id is %s', me.id);
   console.log('And my username is %s', me.username);
 });
-
 
 bot.on('text', (msg) => {
   botan.track(msg, 'Start');
@@ -64,6 +65,7 @@ bot.on('text', (msg) => {
   if (messageText.indexOf('/every') === 0) {
     job.start();
   }
+
   if (messageText.indexOf('/none') === 0) {
     console.log('→ → → → → stoping');
     job.stop();
@@ -173,7 +175,6 @@ function parseMessage(aMessageText) {
     default:
       result[1] = 'UAH';
   }
-
 
   return result;
 }

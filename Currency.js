@@ -1,5 +1,6 @@
 var TelegramBot = require('node-telegram-bot-api');
 var fetch = require('node-fetch');
+
 // var http = require('http');
 var CronJob = require('cron').CronJob;
 var botan = require('botanio')('aY_53_cuEgg4Aaz3_4Ixhv3zwu9GmsuZ');
@@ -46,6 +47,7 @@ bot.on('text', (msg) => {
   botan.track(msg, 'Start');
   messageChatId = msg.chat.id;
   var messageText = msg.text;
+
   // var messageDate = msg.date;
   // var messageUser = msg.from.username;
   var opts = {
@@ -54,6 +56,7 @@ bot.on('text', (msg) => {
       keyboard: [
         ['USD'],
         ['EUR', 'RUB'],
+
         // ['four', 'five', 'six'],
       ],
       one_time_keyboard: false,
@@ -108,6 +111,7 @@ function numberToCurrency(aMessageChatId, aMessageText, op) {
     .then((json) => {
       var text = parseMessage(aMessageText);
       var rates = arrayToMoney(text, json);
+
       // var d = parseFloat(+aMessageText / (Math.round((json[2].sale) * 100) / 100)).toFixed(2);
       // var e = parseFloat(+aMessageText / (Math.round((json[0].sale) * 100) / 100)).toFixed(2);
       // var r = parseFloat(+aMessageText / (Math.round((json[1].sale) * 100) / 100)).toFixed(2);

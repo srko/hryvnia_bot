@@ -19,7 +19,7 @@
     "eslint-plugin-react": "^6.1.2"
   },
   "scripts": {
-    "start": "node Currency.js",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

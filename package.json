@@ -4,12 +4,11 @@
   "description": "exchange rates of ukrainian hryvnia for Telegram bot",
   "main": "Currency.js",
   "dependencies": {
+    "body-parser": "^1.18.2",
     "botanio": "0.0.6",
-    "cron": "^1.1.0",
     "express": "^4.16.2",
     "node-fetch": "^1.6.0",
-    "node-telegram-bot-api": "^0.23.3",
-    "request": "^2.74.0"
+    "node-telegram-bot-api": "^0.23.3"
   },
   "devDependencies": {
     "eslint": "^3.3.1",

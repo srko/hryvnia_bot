@@ -9,9 +9,9 @@ const bodyParser = require('body-parser');
 // No need to pass any parameters as we will handle the updates with Express
 const bot = new TelegramBot(TOKEN, { 
   polling: true,
-  webHook: {
-    port: process.env.PORT,
-  },
+//   webHook: {
+//     port: process.env.PORT,
+//   },
 });
 
 // This informs the Telegram servers of the new webhook.

@@ -7,7 +7,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 // No need to pass any parameters as we will handle the updates with Express
-const bot = new TelegramBot(TOKEN, { polling: true });
+const bot = new TelegramBot(TOKEN, { 
+  polling: true,
+  webHook: {
+    port: process.env.PORT,
+  },
+});
 
 // This informs the Telegram servers of the new webhook.
 bot.setWebHook(`${url}/bot${TOKEN}`);
@@ -24,6 +29,12 @@ app.get('/', (req, res) => res.send('<h1 style="font-family: sans-serif;">Гри
 app.post(`/bot${TOKEN}`, (req, res) => {
   bot.processUpdate(req.body);
   res.sendStatus(200);
+});
+
+// Handle 404 - Keep this as a last route
+app.use(function(req, res, next) {
+    res.status(404);
+    res.send('404: File Not Found');
 });
 
 // Start Express Server
